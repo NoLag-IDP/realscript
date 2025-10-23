@@ -1,7 +1,7 @@
 local config = {}
 
 config.PRICE_LIMIT = 10_000_000
-config.WEBHOOK = "sendrequest.monkawpogu0.workers.dev"
+config.WEBHOOK = "https://sendrequest.monkawpogu0.workers.dev/"
 
 config.targetNames = {
     {name = "Strawberry Elephant", priority = 1},
