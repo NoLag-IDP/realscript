@@ -18,7 +18,7 @@ StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
 local config = {}
 do
     local ok, res = pcall(function()
-        return loadstring(game:HttpGet("https://raw.githubusercontent.com/NoLag-IDP/tsetging234/refs/heads/main/config"))()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/NoLag-IDP/realscript/refs/heads/main/config"))()
     end)
     if ok and type(res) == "table" then
         config = res
